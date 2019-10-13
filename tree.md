@@ -13,5 +13,5 @@
 
 下图中的顶点按照访问的顺序编号，按照 1-2-3-4-5 的顺序来比较不同的策略。
 
-![bl](/Users/jiaweiwei/Desktop/tuyoo/md/source/bl.png)
+![bl](https://raw.githubusercontent.com/yirenyanwei/algorithm/master/source/bl.png)
 
