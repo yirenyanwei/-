@@ -2,7 +2,7 @@
 * @Author: yanwei
 * @Date:   2020-07-08 17:22:19
 * @Last Modified by:   haoyanwei
-* @Last Modified time: 2022-05-19 18:45:58
+* @Last Modified time: 2022-05-20 18:53:24
 //一些小算法
 */
 
@@ -19050,5 +19050,123 @@ board[clickr][clickc] 为 'M' 或 'E'
  * @return {character[][]}
  */
 var updateBoard = function(board, click) {
+
+};
+
+/**
+530. 二叉搜索树的最小绝对差
+给你一个二叉搜索树的根节点 root ，返回 树中任意两不同节点值之间的最小差值 。
+
+差值是一个正数，其数值等于两值之差的绝对值。
+
+ 
+
+示例 1：
+
+
+输入：root = [4,2,6,1,3]
+输出：1
+示例 2：
+
+
+输入：root = [1,0,48,null,null,12,49]
+输出：1
+ 
+
+提示：
+
+树中节点的数目范围是 [2, 104]
+0 <= Node.val <= 105
+**/
+
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
+ * }
+ */
+/**
+ * @param {TreeNode} root
+ * @return {number}
+ */
+var getMinimumDifference = function(root) {
+	//中序深度优先遍历
+	let min = Number.MAX_VALUE, pre = -1
+	let dfs = function(node) {
+		if(!node) {
+			return
+		}
+		dfs(node.left)
+		if(pre == -1) {
+			pre = node.val
+		}else {
+			min = Math.min(min, Math.min(node.val-pre))
+			pre = node.val
+		}
+		dfs(node.right)
+	}
+	dfs(root)
+	return min
+};
+var test = function() {
+	//[236,104,701,null,227,null,911]
+	let d1 = new TreeNode(4)
+	let d2 = new TreeNode(2)
+	let d3 = new TreeNode(6)
+	let d4 = new TreeNode(1)
+	let d5 = new TreeNode(3)
+	d1.left = d2
+	d1.right = d3
+	d2.left = d4
+	d2.right = d5
+	console.log('getMinimumDifference:', getMinimumDifference(d1))
+}
+test()
+
+/**
+532. 数组中的 k-diff 数对
+给定一个整数数组和一个整数 k，你需要在数组里找到 不同的 k-diff 数对，并返回不同的 k-diff 数对 的数目。
+
+这里将 k-diff 数对定义为一个整数对 (nums[i], nums[j])，并满足下述全部条件：
+
+0 <= i < j < nums.length
+|nums[i] - nums[j]| == k
+注意，|val| 表示 val 的绝对值。
+
+ 
+
+示例 1：
+
+输入：nums = [3, 1, 4, 1, 5], k = 2
+输出：2
+解释：数组中有两个 2-diff 数对, (1, 3) 和 (3, 5)。
+尽管数组中有两个1，但我们只应返回不同的数对的数量。
+示例 2：
+
+输入：nums = [1, 2, 3, 4, 5], k = 1
+输出：4
+解释：数组中有四个 1-diff 数对, (1, 2), (2, 3), (3, 4) 和 (4, 5)。
+示例 3：
+
+输入：nums = [1, 3, 1, 5, 4], k = 0
+输出：1
+解释：数组中只有一个 0-diff 数对，(1, 1)。
+ 
+
+提示：
+
+1 <= nums.length <= 104
+-107 <= nums[i] <= 107
+0 <= k <= 107
+
+**/
+/**
+ * @param {number[]} nums
+ * @param {number} k
+ * @return {number}
+ */
+var findPairs = function(nums, k) {
 
 };
