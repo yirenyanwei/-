@@ -2,7 +2,7 @@
 * @Author: yanwei
 * @Date:   2020-07-08 17:22:19
 * @Last Modified by:   haoyanwei
-* @Last Modified time: 2022-05-20 18:53:24
+* @Last Modified time: 2022-10-24 17:41:47
 //一些小算法
 */
 
@@ -19168,5 +19168,667 @@ test()
  * @return {number}
  */
 var findPairs = function(nums, k) {
+	let numMap = {}
+	for(let i = 0; i<nums.length; i++) {
+		numMap[nums[i]] = numMap[nums[i]] || 0
+		numMap[nums[i]]++
+	}
+	let total = 0
+	let pos = [-k, k]
+	console.log(numMap)
+	for(let i = 0; i<nums.length; i++) {
+		if(k == 0) {
+			if(numMap[nums[i]]>=2) {
+				total++
+			}
+		}else if(numMap[nums[i]]){
+			for(let j = 0; j<2; j++) {
+				let num = nums[i]+pos[j]
+				if (numMap[num]) {
+					total++
+				}
+			}
+		}
+		numMap[nums[i]] = 0
+	}
+	return total
+};
+nums = [-1,-1,1,1], k = 0
+console.log('findPairs', findPairs(nums, k))
+
+/**
+535. TinyURL 的加密与解密
+TinyURL 是一种 URL 简化服务， 比如：当你输入一个 URL https://leetcode.com/problems/design-tinyurl 时，它将返回一个简化的URL http://tinyurl.com/4e9iAk 。请你设计一个类来加密与解密 TinyURL 。
+
+加密和解密算法如何设计和运作是没有限制的，你只需要保证一个 URL 可以被加密成一个 TinyURL ，并且这个 TinyURL 可以用解密方法恢复成原本的 URL 。
+
+实现 Solution 类：
+
+Solution() 初始化 TinyURL 系统对象。
+String encode(String longUrl) 返回 longUrl 对应的 TinyURL 。
+String decode(String shortUrl) 返回 shortUrl 原本的 URL 。题目数据保证给定的 shortUrl 是由同一个系统对象加密的。
+ 
+
+示例：
+
+输入：url = "https://leetcode.com/problems/design-tinyurl"
+输出："https://leetcode.com/problems/design-tinyurl"
+
+解释：
+Solution obj = new Solution();
+string tiny = obj.encode(url); // 返回加密后得到的 TinyURL 。
+string ans = obj.decode(tiny); // 返回解密后得到的原本的 URL 。
+ 
+
+提示：
+
+1 <= url.length <= 104
+题目数据保证 url 是一个有效的 URL
+**/
+/**
+ * Encodes a URL to a shortened URL.
+ *
+ * @param {string} longUrl
+ * @return {string}
+ */
+var encode = function(longUrl) {
+    this.database = new Map()
+    this.idx = 0
+    this.idx++
+    this.database.set(this.idx, longUrl)
+    return 'http://tinyurl.com/'+this.idx
+};
+
+/**
+ * Decodes a shortened URL to its original URL.
+ *
+ * @param {string} shortUrl
+ * @return {string}
+ */
+var decode = function(shortUrl) {
+    let p = shortUrl.lastIndexOf('/')+1
+    let idx = shortUrl.substring(p)
+    idx = parseInt(idx)
+    return this.database.get(idx)
+};
+
+/**
+ * Your functions will be called as such:
+ * decode(encode(url));
+ */
+ var _encode = encode('www.baidu.com')
+ var _decode = decode(_encode)
+ console.log(_encode, _decode)
+
+ /**
+ 537. 复数乘法
+复数 可以用字符串表示，遵循 "实部+虚部i" 的形式，并满足下述条件：
+
+实部 是一个整数，取值范围是 [-100, 100]
+虚部 也是一个整数，取值范围是 [-100, 100]
+i2 == -1 i的平方 = -1
+给你两个字符串表示的复数 num1 和 num2 ，请你遵循复数表示形式，返回表示它们乘积的字符串。
+
+ 
+
+示例 1：
+
+输入：num1 = "1+1i", num2 = "1+1i"
+输出："0+2i"
+解释：(1 + i) * (1 + i) = 1 + i2 + 2 * i = 2i ，你需要将它转换为 0+2i 的形式。
+示例 2：
+
+输入：num1 = "1+-1i", num2 = "1+-1i"
+输出："0+-2i"
+解释：(1 - i) * (1 - i) = 1 + i2 - 2 * i = -2i ，你需要将它转换为 0+-2i 的形式。 
+ 
+
+提示：
+
+num1 和 num2 都是有效的复数表示。
+ **/
+ /**
+ * @param {string} num1
+ * @param {string} num2
+ * @return {string}
+ */
+var complexNumberMultiply = function(num1, num2) {
+	let ret = []
+	let spliceStr = function(num) {
+		let nums = num.split('+')
+		nums[0] = parseInt(nums[0])
+		nums[1] = parseInt(nums[1].slice(0, nums[1].length-1))
+		ret.push(nums)
+	}
+	spliceStr(num1)
+	spliceStr(num2)
+	let str = (ret[0][0]*ret[1][0]-ret[0][1]*ret[1][1])
+	str+='+'+(ret[0][0]*ret[1][1]+ret[0][1]*ret[1][0])+'i'
+	return str
+};
+num1 = "1+1i", num2 = "1+1i"
+num1 = "1+-1i", num2 = "1+-1i"
+console.log('complexNumberMultiply', complexNumberMultiply(num1,num2))
+
+/*
+538. 把二叉搜索树转换为累加树
+给出二叉 搜索 树的根节点，该树的节点值各不相同，请你将其转换为累加树（Greater Sum Tree），使每个节点 node 的新值等于原树中大于或等于 node.val 的值之和。
+
+提醒一下，二叉搜索树满足下列约束条件：
+
+节点的左子树仅包含键 小于 节点键的节点。
+节点的右子树仅包含键 大于 节点键的节点。
+左右子树也必须是二叉搜索树。
+
+输入：[4,1,6,0,2,5,7,null,null,null,3,null,null,null,8]
+输出：[30,36,21,36,35,26,15,null,null,null,33,null,null,null,8]
+示例 2：
+
+输入：root = [0,null,1]
+输出：[1,null,1]
+示例 3：
+
+输入：root = [1,0,2]
+输出：[3,3,2]
+示例 4：
+
+输入：root = [3,2,4,1]
+输出：[7,9,4,10]
+ 
+
+提示：
+
+树中的节点数介于 0 和 104 之间。
+每个节点的值介于 -104 和 104 之间。
+树中的所有值 互不相同 。
+给定的树为二叉搜索树。
+*/
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
+ * }
+ */
+/**
+ * @param {TreeNode} root
+ * @return {TreeNode}
+ */
+var convertBST = function(root) {
+	//思路：反序中序遍历  右中左
+	let total = 0
+	let dfs = function(node) {
+		if(!node) {
+			return
+		}
+		dfs(node.right)
+		total+=node.val
+		node.val = total
+		dfs(node.left)
+	}
+	dfs(root)
+	return root
+};
+
+/**
+539. 最小时间差
+给定一个 24 小时制（小时:分钟 "HH:MM"）的时间列表，找出列表中任意两个时间的最小时间差并以分钟数表示。
+
+ 
+示例 1：
+
+输入：timePoints = ["23:59","00:00"]
+输出：1
+示例 2：
+
+输入：timePoints = ["00:00","23:59","00:00"]
+输出：0
+ 
+
+提示：
+
+2 <= timePoints.length <= 2 * 104
+timePoints[i] 格式为 "HH:MM"
+
+方法一：排序，然后取最小时间差
+**/
+
+/**
+ * @param {string[]} timePoints
+ * @return {number}
+ */
+var findMinDifference = function(timePoints) {
+	timePoints.sort()
+	function getMinutes(s) {
+		//转化为分钟
+		return (parseInt(s[0])*10+parseInt(s[1]))*60+(parseInt(s[3])*10+parseInt(s[4]))
+	}
+	let minutes0 = getMinutes(timePoints[0])
+	let min = Number.MAX_VALUE
+	let preMinutes = minutes0
+	for(let i = 1; i<timePoints.length; i++) {
+		let minutes = getMinutes(timePoints[i])
+		min = Math.min(min, minutes-preMinutes)
+		preMinutes = minutes
+	}
+	//计算第一个最后一个
+	min = Math.min(min, minutes0+24*60-preMinutes)
+	return min
+};
+var timePoints = ["23:59","00:00"]
+timePoints = ["00:00","23:59","00:00"]
+console.log('findMinDifference:', findMinDifference(timePoints))
+
+/**
+540. 有序数组中的单一元素
+给你一个仅由整数组成的有序数组，其中每个元素都会出现两次，唯有一个数只会出现一次。
+
+请你找出并返回只出现一次的那个数。
+
+你设计的解决方案必须满足 O(log n) 时间复杂度和 O(1) 空间复杂度。
+
+ 
+
+示例 1:
+
+输入: nums = [1,1,2,3,3,4,4,8,8]
+输出: 2
+示例 2:
+
+输入: nums =  [3,3,7,7,10,11,11]
+输出: 10
+ 
+
+提示:
+
+1 <= nums.length <= 105
+0 <= nums[i] <= 105
+*/
+
+/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+var singleNonDuplicate = function(nums) {
+	//算法 二分查找
+	let left = 0, right = nums.length-1
+	while(left<right) {
+		let mid = left + Math.floor((right-left)/2)
+		if(nums[mid] == nums[mid^1]) {
+			left = mid + 1//在右边
+		}else {
+			right = mid
+		}
+	}
+	return nums[left]
+};
+nums = [1,1,2,3,3,4,4,8,8]
+nums =  [3,3,7,7,10,11,11]
+console.log('singleNonDuplicate:', singleNonDuplicate(nums))
+
+/*
+541. 反转字符串 II
+给定一个字符串 s 和一个整数 k，从字符串开头算起，每计数至 2k 个字符，就反转这 2k 字符中的前 k 个字符。
+
+如果剩余字符少于 k 个，则将剩余字符全部反转。
+如果剩余字符小于 2k 但大于或等于 k 个，则反转前 k 个字符，其余字符保持原样。
+ 
+
+示例 1：
+
+输入：s = "abcdefg", k = 2
+输出："bacdfeg"
+示例 2：
+
+输入：s = "abcd", k = 2
+输出："bacd"
+ 
+
+提示：
+
+1 <= s.length <= 104
+s 仅由小写英文组成
+1 <= k <= 104
+
+*/
+/**
+ * @param {string} s
+ * @param {number} k
+ * @return {string}
+ */
+var reverseStr = function(s, k) {
+	let temp = []
+	let start = 0
+	let len = s.length
+	while(start <=len-1) {
+		let end = start+k
+		end = Math.min(end, len)
+		let sub = s.substring(start, end)
+		if(temp.length%2 == 0) {
+			sub = sub.split('').reverse().join('')
+		}
+		temp.push(sub)
+		start = end
+	}
+	return temp.join('')
+};
+s = "abcdefg", k = 2
+console.log('reverseStr:', reverseStr(s, k))
+
+/*
+542. 01 矩阵
+给定一个由 0 和 1 组成的矩阵 mat ，请输出一个大小相同的矩阵，其中每一个格子是 mat 中对应位置元素到最近的 0 的距离。
+两个相邻元素间的距离为 1 。
+
+ 
+示例 1：
+
+输入：mat = [[0,0,0],[0,1,0],[0,0,0]]
+输出：[[0,0,0],[0,1,0],[0,0,0]]
+示例 2：
+
+
+输入：mat = [[0,0,0],[0,1,0],[1,1,1]]
+输出：[[0,0,0],[0,1,0],[1,2,1]]
+ 
+提示：
+m == mat.length
+n == mat[i].length
+1 <= m, n <= 104
+1 <= m * n <= 104
+mat[i][j] is either 0 or 1.
+mat 中至少有一个 0 
+
+0暴力法
+时间复杂度 o(m*n)方
+空间复杂度 o(1)
+
+1广度优先算法
+时间复杂度o(m*n) 每个元素只会被加入一次
+空间 o(m*n)
+*/
+/**
+ * @param {number[][]} mat
+ * @return {number[][]}
+ */
+var updateMatrix = function(mat) {
+	let arr0 = []
+	let arr1 = []
+	for(let i = 0; i<mat.length; i++){
+		for(let j = 0; j<mat[0].length; j++){
+			let data = {r:i, c:j}
+			if (mat[i][j] == 0) {
+				arr0.push(data)
+			}else{
+				arr1.push(data)
+			}
+		}
+	}
+	let findMinDis = function(r,c){
+		let min = Number.MAX_VALUE
+		for(let i = 0; i<arr0.length; i++){
+			min = Math.min(min, Math.abs(arr0[i].r-r)+Math.abs(arr0[i].c-c))
+		}
+		return min
+	}
+	for(let i = 0; i<mat.length; i++){
+		for(let j = 0; j<mat[0].length; j++){
+			if (mat[i][j] == 1) {
+				mat[i][j] = findMinDis(i, j)
+			}
+		}
+	}
+	return mat
+};
+var updateMatrix2 = function(mat) {
+	let res = []
+	let queue = []
+	for(let i = 0; i<mat.length; i++){
+		res[i] = []
+		for(let j = 0; j<mat[i].length; j++){
+			if (mat[i][j] == 0) {
+				res[i][j] = 0
+				queue.push({r:i,c:j})
+			}else {
+				res[i][j] = Number.MAX_VALUE
+			}
+		}
+	}
+	let row = mat.length
+	let col = mat[0].length
+	let dir = [{r:-1,c:0},{r:1,c:0},{r:0,c:-1},{r:0,c:1}]
+	while(queue.length>0){
+		let data = queue.shift()
+		for(let i = 0; i<dir.length; i++){
+			let new_r = data.r+dir[i].r
+			let new_c = data.c+dir[i].c
+			if (new_r>=0 && new_c>=0 && new_r<row && new_c<col) {
+				if (res[new_r][new_c]>res[data.r][data.c]+1) {
+					//邻居的值>原点值+1  更新邻居值
+					res[new_r][new_c] = res[data.r][data.c]+1
+					queue.push({r:new_r,c:new_c})
+				}
+			}
+		}
+	}
+	return res
+}
+mat = [[0,0,0],[0,1,0],[1,1,1]]
+console.log('updateMatrix:', updateMatrix2(mat))
+/**
+543. 二叉树的直径
+给定一棵二叉树，你需要计算它的直径长度。一棵二叉树的直径长度是任意两个结点路径长度中的最大值。这条路径可能穿过也可能不穿过根结点。
+
+ 
+
+示例 :
+给定二叉树
+
+          1
+         / \
+        2   3
+       / \     
+      4   5    
+返回 3, 它的长度是路径 [4,2,1,3] 或者 [5,2,1,3]。
+
+ 
+
+注意：两结点之间的路径长度是以它们之间边的数目表示。
+
+分析
+求边的最大数目
+左子树的深度+右子树的深度
+
+1、深度优先算法
+时间复杂度O(N)
+
+**/
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
+ * }
+ */
+/**
+ * @param {TreeNode} root
+ * @return {number}
+ */
+
+var diameterOfBinaryTree = function(root) {
+	let ans = 0
+	let calDeep = function(node){
+		if (!node) {return 0}
+		let L = calDeep(node.left)
+		let R = calDeep(node.right)
+		ans = Math.max(ans, L+R)
+
+		return Math.max(L,R)+1 //节点的深度
+	}
+	calDeep(root)
+	return ans
+};
+var root = function(){
+	let a = new TreeNode(1)
+	let b = new TreeNode(2)
+	let c = new TreeNode(3)
+	let d = new TreeNode(4)
+	let e = new TreeNode(5)
+	a.left = b
+	a.right = c
+	b.left = d
+	b.right = e
+	return a
+}()
+console.log('diameterOfBinaryTree:', diameterOfBinaryTree(root))
+
+/**
+546. 移除盒子
+给出一些不同颜色的盒子 boxes ，盒子的颜色由不同的正数表示。
+
+你将经过若干轮操作去去掉盒子，直到所有的盒子都去掉为止。每一轮你可以移除具有相同颜色的连续 k 个盒子（k >= 1），这样一轮之后你将得到 k * k 个积分。
+
+返回 你能获得的最大积分和 。
+
+ 
+
+示例 1：
+
+输入：boxes = [1,3,2,2,2,3,4,3,1]
+输出：23
+解释：
+[1, 3, 2, 2, 2, 3, 4, 3, 1] 
+----> [1, 3, 3, 4, 3, 1] (3*3=9 分) 
+----> [1, 3, 3, 3, 1] (1*1=1 分) 
+----> [1, 1] (3*3=9 分) 
+----> [] (2*2=4 分)
+示例 2：
+
+输入：boxes = [1,1,1]
+输出：9
+示例 3：
+
+输入：boxes = [1]
+输出：1
+ 
+
+提示：
+
+1 <= boxes.length <= 100
+1 <= boxes[i] <= 100
+
+求最大积分和
+**/
+/**
+ * @param {number[]} boxes
+ * @return {number}
+ */
+var removeBoxes = function(boxes) {
+	let maxScore = 0
+	let score = 0
+	let backTrack = function()
+	{
+		if (boxes.length == 0) {
+			maxScore = Math.max(maxScore, score)
+			return
+		}
+		let start = 0
+		for(let i = 0; i<=boxes.length; i++){
+			if (boxes[i] != boxes[start]) {
+				//选择
+				let value = boxes[start]
+				let num = i-start
+				score += num*num
+				boxes.splice(start, num)
+				backTrack()
+				//回退
+				score -= num*num
+				for(let j = 0; j<num; j++){
+					boxes.splice(start, 0, value)
+				}
+				start = i
+			}
+		}
+	}
+	backTrack()
+	return maxScore
+};
+var removeBoxes2 = function(boxes) {
+	//动态规划法
+	let length = boxes.length
+	let dp = []
+	for(let i = 0; i<length; i++){
+		dp[i] = []
+		for(let j = 0; j<length; j++){
+			dp[i][j] = []
+			for(let k = 0; k<length; k++) {
+				dp[i][j][k] = 0
+			}
+		}
+	}
+	let calculatePoints = function(l, r, k) {
+        if (l > r) {
+            return 0;
+        }
+        if (dp[l][r][k] == 0) {
+            let r1 = r, k1 = k;
+            while (r1 > l && boxes[r1] == boxes[r1 - 1]) {
+                r1--;
+                k1++;
+            }
+            dp[l][r][k] = calculatePoints(l, r1 - 1, 0) + (k1 + 1) * (k1 + 1);
+            for (let i = l; i < r1; i++) {
+                if (boxes[i] == boxes[r1]) {
+                    dp[l][r][k] = Math.max(dp[l][r][k], calculatePoints(l, i, k1 + 1) + calculatePoints(i + 1, r1 - 1, 0));
+                }
+            }
+        }
+        return dp[l][r][k];
+    }
+    return calculatePoints(0, length - 1, 0)
+}
+boxes = [1,3,2,2,2,3,4,3,1]
+console.log('removeBoxes:', removeBoxes2(boxes))
+
+/*
+547. 省份数量
+有 n 个城市，其中一些彼此相连，另一些没有相连。如果城市 a 与城市 b 直接相连，且城市 b 与城市 c 直接相连，那么城市 a 与城市 c 间接相连。
+
+省份 是一组直接或间接相连的城市，组内不含其他没有相连的城市。
+
+给你一个 n x n 的矩阵 isConnected ，其中 isConnected[i][j] = 1 表示第 i 个城市和第 j 个城市直接相连，而 isConnected[i][j] = 0 表示二者不直接相连。
+
+返回矩阵中 省份 的数量。
+
+ 
+
+示例 1：
+
+
+输入：isConnected = [[1,1,0],[1,1,0],[0,0,1]]
+输出：2
+示例 2：
+
+
+输入：isConnected = [[1,0,0],[0,1,0],[0,0,1]]
+输出：3
+ 
+
+提示：
+
+1 <= n <= 200
+n == isConnected.length
+n == isConnected[i].length
+isConnected[i][j] 为 1 或 0
+isConnected[i][i] == 1
+isConnected[i][j] == isConnected[j][i]
+*/
+/**
+ * @param {number[][]} isConnected
+ * @return {number}
+ */
+var findCircleNum = function(isConnected) {
 
 };
