@@ -2,10 +2,42 @@
 * @Author: haoyanwei
 * @Date:   2022-12-04 15:48:22
 * @Last Modified by:   haoyanwei
-* @Last Modified time: 2022-12-04 20:55:31
+* @Last Modified time: 2022-12-05 20:29:30
 * 常用的50道算法题
 */
 
+/**
+扁平数据转tree
+疯狂上机
+时间复杂度O(n)
+空间复杂度O(n)
+**/
+function toTree(arr){
+	let map = {}
+	for(let item of arr){
+		map[item.id] = item
+	}
+	let root = null
+	for(let item of arr){
+		let pid = item.pid
+		if(pid == 0){
+			root = item
+		}else {
+			let parent = map[pid]
+			parent.children = parent.children || []
+			parent.children.push(item)
+		}
+	}
+	return root
+}
+var arr = [
+  {id: 1, name: '部门1', pid: 0},
+  {id: 2, name: '部门2', pid: 1},
+  {id: 3, name: '部门3', pid: 1},
+  {id: 4, name: '部门4', pid: 3},
+  {id: 5, name: '部门5', pid: 4},
+]
+console.log('toTree:', toTree(arr))
 /**
 1、合并两个有序数组
 方法：双指针法
@@ -255,4 +287,199 @@ var getIntersectionNode = function(headA, headB) {
     	pB = pB==null?headA:pB.next
     }
     return pA
+};
+/**
+9、判断链表中是否有环
+https://leetcode-cn.com/problems/linked-list-cycle/
+
+思路：快慢指针
+时间复杂度O(n)
+空间复杂度O(1)
+**/
+/**
+ * Definition for singly-linked list.
+ * function ListNode(val) {
+ *     this.val = val;
+ *     this.next = null;
+ * }
+ */
+
+/**
+ * @param {ListNode} head
+ * @return {boolean}
+ */
+var hasCycle = function(head) {
+    if (!head) {
+    	return false
+    }
+    let low = head
+    let fast = head.next
+    while(low!=fast){
+    	if(!fast || !fast.next){
+    		//判断fast为空则无环
+    		return false
+    	}
+    	low = low.next
+    	fast = fast.next.next
+    }
+    return true
+};
+/**
+10、给定一个链表，返回链表开始入环的第一个节点。 如果链表无环，则返回 null
+https://leetcode-cn.com/problems/linked-list-cycle-ii/
+双指针法
+a 非环形区距离
+b 环形区相遇点距离
+c 环形剩余距离
+快慢指针
+(a+b)*2 = a+(b+c)*n+b
+a = c+(b+c)*(n-1)
+即快慢指针相遇后，p从头走和慢指针相遇点就是环开始的位置
+
+时间复杂度O(n)
+空间复杂度O(1)
+**/
+/**
+ * Definition for singly-linked list.
+ * function ListNode(val) {
+ *     this.val = val;
+ *     this.next = null;
+ * }
+ */
+
+/**
+ * @param {ListNode} head
+ * @return {ListNode}
+ */
+var detectCycle = function(head) {
+	if (head == null) {
+		return null
+	}
+    let slow = head
+    let fast = head
+    while(fast!=null){
+    	slow = slow.next
+    	if(fast.next!=null){
+    		fast = fast.next.next
+    	}else{
+    		return null
+    	}
+    	if(fast == slow){
+    		//相遇点,ptr从头走
+    		let ptr = head
+    		while(ptr!=slow){
+    			ptr = ptr.next
+    			slow = slow.next
+    		}
+    		return ptr
+    	}
+    }
+    return null
+};
+/**
+11、给定一个链表，两两交换其中相邻的节点，并返回交换后的链表。
+https://leetcode-cn.com/problems/swap-nodes-in-pairs/
+
+时间复杂度O(n)
+空间复杂度O(1)
+**/
+/**
+ * Definition for singly-linked list.
+ * function ListNode(val, next) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.next = (next===undefined ? null : next)
+ * }
+ */
+/**
+ * @param {ListNode} head
+ * @return {ListNode}
+ */
+var swapPairs = function(head) {
+	let start = new ListNode(-1)
+	let curr = start
+	let p = head
+	while(p){
+		let next = p.next
+		if(!next){
+			curr.next = p
+			p.next = null
+			curr = p
+			break
+		}
+		let nnext = next.next
+		curr.next = next
+		next.next = p
+
+		curr = p
+		p = nnext
+	}
+	if (curr) {
+		curr.next = null
+	}
+	return start.next
+};
+
+/**
+12、删除 排序 链表中的重复元素
+https://leetcode-cn.com/problems/remove-duplicates-from-sorted-list/
+
+时间复杂度O(n)
+空间O(1)
+**/
+/**
+ * Definition for singly-linked list.
+ * function ListNode(val, next) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.next = (next===undefined ? null : next)
+ * }
+ */
+/**
+ * @param {ListNode} head
+ * @return {ListNode}
+ */
+var deleteDuplicates = function(head) {
+	if(!head){
+		return null
+	}
+	let curr = head
+	while(curr.next){
+		let next = curr.next
+		if(next.val == curr.val){
+			curr.next = next.next
+		}else {
+			curr = next
+		}
+	}
+	return head
+};
+/**
+13、给你一个链表的头节点 head 和一个整数 val ，请你删除链表中所有满足 Node.val == val 的节点，并返回 新的头节点
+时间O(n)
+空间O(1)
+**/
+/**
+ * Definition for singly-linked list.
+ * function ListNode(val, next) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.next = (next===undefined ? null : next)
+ * }
+ */
+/**
+ * @param {ListNode} head
+ * @param {number} val
+ * @return {ListNode}
+ */
+var removeElements = function(head, val) {
+	let node = new ListNode(-1)
+	let curr = node
+	let p = head
+	while(p){
+		if (p.val != val) {
+			curr.next = p
+			curr = p
+		}
+		p = p.next
+	}
+	curr.next = null
+	return node.next
 };
