@@ -2,7 +2,7 @@
 * @Author: haoyanwei
 * @Date:   2022-12-04 15:48:22
 * @Last Modified by:   haoyanwei
-* @Last Modified time: 2022-12-05 20:29:30
+* @Last Modified time: 2022-12-06 20:51:24
 * 常用的50道算法题
 */
 
@@ -483,3 +483,62 @@ var removeElements = function(head, val) {
 	curr.next = null
 	return node.next
 };
+/**
+给你一个链表，每 k 个节点一组进行翻转，请你返回翻转后的链表
+https://leetcode-cn.com/problems/reverse-nodes-in-k-group/
+时间复杂度O(n)
+空间复杂度O(1)
+**/
+/**
+ * Definition for singly-linked list.
+ * function ListNode(val, next) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.next = (next===undefined ? null : next)
+ * }
+ */
+/**
+ * @param {ListNode} head
+ * @param {number} k
+ * @return {ListNode}
+ */
+var reverseKGroup = function(head, k) {
+	let p = new ListNode(0)
+	p.next = head
+	let prev = p
+	let curr = head
+	let reverse = function(from, to){
+		let _prev = null
+		let _p = from
+		while(_p!=to){
+			let next = _p.next
+			_p.next = _prev
+
+			_prev = _p
+			_p = next
+		}
+		_p.next = _prev
+		return [to, from]
+	}
+	while(curr){
+		let endP = curr
+		let startP = curr
+		//检查到k个
+		for(let i = 1; i<k; i++){
+			endP = endP.next
+			if(!endP){
+				return p.next
+			}
+		}
+		let next = endP.next;
+		[startP,endP] = reverse(startP, endP)
+		endP.next = next
+		prev.next = startP
+		curr = next
+		prev = endP
+	}
+	return p.next
+};
+var n1 = new ListNode(1)
+var n2 = new ListNode(2)
+n1.next = n2
+console.log('reverseKGroup：', reverseKGroup(n1, 2))
