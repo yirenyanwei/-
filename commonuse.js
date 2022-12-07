@@ -2,7 +2,7 @@
 * @Author: haoyanwei
 * @Date:   2022-12-04 15:48:22
 * @Last Modified by:   haoyanwei
-* @Last Modified time: 2022-12-06 20:51:24
+* @Last Modified time: 2022-12-07 17:56:57
 * 常用的50道算法题
 */
 
@@ -542,3 +542,56 @@ var n1 = new ListNode(1)
 var n2 = new ListNode(2)
 n1.next = n2
 console.log('reverseKGroup：', reverseKGroup(n1, 2))
+
+/**
+括号生成
+https://leetcode-cn.com/problems/generate-parentheses/
+
+回溯法
+**/
+/**
+数字 n 代表生成括号的对数，请你设计一个函数，用于能够生成所有可能的并且 有效的 括号组合。
+
+示例 1：
+输入：n = 3
+输出：["((()))","(()())","(())()","()(())","()()()"]
+示例 2：
+
+输入：n = 1
+输出：["()"]
+ * @param {number} n
+ * @return {string[]}
+ */
+var generateParenthesis = function(n) {
+	let temp = []
+	let res = []
+	let items = ['(', ')']
+	let itemNums = [0, 0]
+	let backTrack = function(i){
+		if (i>=2*n) {
+			res.push(temp.join(''))
+			return
+		}
+		for(let j = 0; j<items.length; j++){
+			if(itemNums[j]>=n){
+				continue
+			}
+			if(j==1 && itemNums[1]>=itemNums[0]){
+				continue
+			}
+			temp.push(items[j])
+			itemNums[j]++
+			backTrack(i+1)
+			temp.pop()
+			itemNums[j]--
+		}
+	}
+	backTrack(0)
+	return res
+};
+console.log('generateParenthesis:', generateParenthesis(3))
+
+/**
+给定一个只包括 '('，')'，'{'，'}'，'['，']' 的字符串 s ，判断字符串是否有效。
+https://leetcode-cn.com/problems/valid-parentheses/
+**/
