@@ -2,7 +2,7 @@
 * @Author: haoyanwei
 * @Date:   2022-12-04 15:48:22
 * @Last Modified by:   haoyanwei
-* @Last Modified time: 2022-12-08 16:52:44
+* @Last Modified time: 2022-12-09 19:15:34
 * 常用的50道算法题
 */
 
@@ -622,9 +622,15 @@ console.log('isValid:', isValid(s))
 /**
 仅使用两个栈实现先入先出队列
 https://leetcode-cn.com/problems/implement-queue-using-stacks/
+两个栈
+stackIn 输入栈
+stackOut 输出栈
+push 推入到statkIn
+pop peek 从stackOut中输出，如果为空，把stackIn的数据加入到stackOut中
 **/
 var MyQueue = function() {
-
+	this.m_stackIn = []
+	this.m_stackOut = []
 };
 
 /** 
@@ -632,29 +638,38 @@ var MyQueue = function() {
  * @return {void}
  */
 MyQueue.prototype.push = function(x) {
-
+	this.m_stackIn.push(x)
 };
 
 /**
  * @return {number}
  */
 MyQueue.prototype.pop = function() {
-
+	this.inToOut()
+	return this.m_stackOut.pop()
 };
 
 /**
  * @return {number}
  */
 MyQueue.prototype.peek = function() {
-
+	this.inToOut()
+	return this.m_stackOut[this.m_stackOut.length-1]
 };
 
 /**
  * @return {boolean}
  */
 MyQueue.prototype.empty = function() {
-
+	return this.m_stackIn.length==0 && this.m_stackOut.length==0
 };
+MyQueue.prototype.inToOut = function(){
+	if (this.m_stackOut.length == 0) {
+		while(this.m_stackIn.length>0){
+			this.m_stackOut.push(this.m_stackIn.pop())
+		}
+	}
+}
 
 /**
  * Your MyQueue object will be instantiated and called as such:
@@ -678,3 +693,90 @@ boolean empty() 如果队列为空，返回 true ；否则，返回 false
 你 只能 使用标准的栈操作 —— 也就是只有 push to top, peek/pop from top, size, 和 is empty 操作是合法的。
 你所使用的语言也许不支持栈。你可以使用 list 或者 deque（双端队列）来模拟一个栈，只要是标准的栈操作即可。
  **/
+
+ /**
+ 仅使用两个队列实现一个后入先出（LIFO）的栈
+ https://leetcode-cn.com/problems/implement-stack-using-queues/
+ **/
+ var MyStack = function() {
+ 	this.m_stack = []
+};
+
+/** 
+ * @param {number} x
+ * @return {void}
+ */
+MyStack.prototype.push = function(x) {
+	this.m_stack.push(x)
+};
+
+/**
+ * @return {number}
+ */
+MyStack.prototype.pop = function() {
+	return this.m_stack.pop()
+};
+
+/**
+ * @return {number}
+ */
+MyStack.prototype.top = function() {
+	return this.m_stack[this.m_stack.length-1]
+};
+
+/**
+ * @return {boolean}
+ */
+MyStack.prototype.empty = function() {
+	return !this.m_stack.length
+};
+
+/**
+ * Your MyStack object will be instantiated and called as such:
+ * var obj = new MyStack()
+ * obj.push(x)
+ * var param_2 = obj.pop()
+ * var param_3 = obj.top()
+ * var param_4 = obj.empty()
+ */
+ /**
+请你仅使用两个队列实现一个后入先出（LIFO）的栈，并支持普通栈的全部四种操作（push、top、pop 和 empty）。
+
+实现 MyStack 类：
+
+void push(int x) 将元素 x 压入栈顶。
+int pop() 移除并返回栈顶元素。
+int top() 返回栈顶元素。
+boolean empty() 如果栈是空的，返回 true ；否则，返回 false 。
+ 
+注意：
+你只能使用队列的基本操作 —— 也就是 push to back、peek/pop from front、size 和 is empty 这些操作。
+你所使用的语言也许不支持队列。 你可以使用 list （列表）或者 deque（双端队列）来模拟一个队列 , 只要是标准的队列操作即可。
+ **/
+
+ /**
+求数组中前k个大数
+https://leetcode-cn.com/problems/zui-xiao-de-kge-shu-lcof/
+ **/
+ /**
+ * @param {number[]} arr
+ * @param {number} k
+ * @return {number[]}
+ */
+var getLeastNumbers = function(arr, k) {
+	//排序，然后取前k
+	arr.sort(function(a, b){
+		return b-a
+	})
+	let res = []
+	for(let i = 0; i<k; i++){
+		res.push(arr[i])
+	}
+};
+/*
+输入整数数组 arr ，找出其中最小的 k 个数。例如，输入4、5、1、6、2、7、3、8这8个数字，则最小的4个数字是1、2、3、4。
+
+示例 1：
+输入：arr = [3,2,1], k = 2
+输出：[1,2] 或者 [2,1]
+*/
