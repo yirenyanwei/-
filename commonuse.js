@@ -2,7 +2,7 @@
 * @Author: haoyanwei
 * @Date:   2022-12-04 15:48:22
 * @Last Modified by:   haoyanwei
-* @Last Modified time: 2022-12-09 19:15:34
+* @Last Modified time: 2022-12-17 09:48:22
 * 常用的50道算法题
 */
 
@@ -115,7 +115,6 @@ var mergeTwoLists = function(list1, list2) {
 	prev.next = list1?list1:list2
 	return list.next
 };
-
 /**
 3、快速排序
 //思路：选择一个基准要素，一般是第一个元素，通过一趟扫描小于基准元素的放到左边，大于的放到右边，基准要素是有序的;  然后用同样的方法遍历其它两部分。
@@ -156,6 +155,42 @@ var nums = [3,1,1,4,2]
 quickSort(nums)
 console.log('quickSort', nums)
 
+
+//归并排序
+//时间O(nLgn) 空间O(n)
+function mergeSort(nums)
+{
+	let temp = []
+	let backTrack = function(l,r){
+		if(l>=r){
+			return 
+		}
+		let mid = parseInt((l+r)/2)
+		backTrack(l, mid)
+		backTrack(mid+1, r)
+		//合并
+		let start1 = l, start2 = mid+1
+		let idx = l
+		while(start1<=mid || start2<=r){
+			if(start1<=mid && start2<=r){
+				if(nums[start1]<nums[start2]){
+					temp[idx++] = nums[start1++]
+				}else {
+					temp[idx++] = nums[start2++]
+				}
+			}else if(start1<=mid ){
+				temp[idx++] = nums[start1++]
+			}else{
+				temp[idx++] = nums[start2++]
+			}
+		}
+		//赋值给nums
+		for(let i = l; i<=r; i++){
+			nums[i] = temp[i]
+		}
+	}
+	backTrack(0, nums.length-1)
+}
 /**
 4、二分查找
 有序的数组进行查找
@@ -204,7 +239,7 @@ var climbStairs = function(n) {
 	}
 	return r
 };
-console.log('climbStairs:', climbStairs(2))
+console.log('climbStairs:', climbStairs(5))
 
 /**
 6、斐波那契数列
@@ -244,7 +279,7 @@ var reverseList = function(head) {
 	let prev = null
 	let curr = head
 	while(curr){
-		next = curr.next
+		let next = curr.next
 		curr.next = prev
 
 		prev = curr
@@ -766,12 +801,13 @@ https://leetcode-cn.com/problems/zui-xiao-de-kge-shu-lcof/
 var getLeastNumbers = function(arr, k) {
 	//排序，然后取前k
 	arr.sort(function(a, b){
-		return b-a
+		return a-b
 	})
 	let res = []
 	for(let i = 0; i<k; i++){
 		res.push(arr[i])
 	}
+	return res
 };
 /*
 输入整数数组 arr ，找出其中最小的 k 个数。例如，输入4、5、1、6、2、7、3、8这8个数字，则最小的4个数字是1、2、3、4。
@@ -780,3 +816,444 @@ var getLeastNumbers = function(arr, k) {
 输入：arr = [3,2,1], k = 2
 输出：[1,2] 或者 [2,1]
 */
+
+console.log('getLeastNumbers:', getLeastNumbers([1,5,2,3], 2))
+
+/*
+在未排序的数组中找到第 k 个最大的元素
+https://leetcode-cn.com/problems/kth-largest-element-in-an-array/
+
+时间O(n)
+空间O(1)
+*/
+/**
+ * @param {number[]} nums
+ * @param {number} k
+ * @return {number}
+ */
+var findKthLargest = function(nums, k) {
+	let backTrack = function(left, right)
+	{
+		if (left<right) {
+			let i = left, j = right, r = nums[i]
+			//从大到小
+			while(i<j){
+				//从右边找>k的值
+				while(i<j && nums[j]<=r){
+					j--
+				}
+				if(i<j){
+					nums[i++] = nums[j]
+				}
+				//从左边找<k的值
+				while(i<j && nums[i]>=r){
+					i++
+				}
+				if(i<j){
+					nums[j--] = nums[i]
+				}
+			}
+			nums[i] = r
+			if(k == i+1){
+				return r
+			}else if(k<i+1){
+				return backTrack(left, i-1)
+			}else {
+				return backTrack(i+1, right)
+			}
+
+		}
+		return nums[left]
+	}
+	return backTrack(0, nums.length-1)
+};
+console.log('findKthLargest:', findKthLargest([2,3,1,4,5], 3))
+
+class HeapSort {
+ 	constructor(arr) {
+ 		this.arr = arr
+ 	}
+ 	buildHeap() {
+ 		for(let i = parseInt(this.arr.length/2)-1; i>=0; i--){
+ 			////从第一个非叶子结点从下至上，从右至左调整结构
+ 			this.adjustHeap(i, this.arr.length)
+ 		}
+ 	}
+ 	sort() {
+ 		//排序
+ 		this.buildHeap()
+ 		for(let i = this.arr.length-1; i>=0; i--) {
+ 			this._swap(0, i)
+ 			this.adjustHeap(0, i)
+ 		}
+ 	}
+ 	adjustHeap(i, len) {
+ 		//重新调整堆 i为开始调整的节点 len为要调整的堆的长度
+ 		for(let k = 2*i+1; k<len; k = 2*k+1) {
+ 			//遍历子节点调整 root i  子 k+1 k+2
+ 			if(k+1<len && this.arr[k+1]>this.arr[k]){
+ 				k++
+ 			}
+ 			if(this.arr[k]>this.arr[i]) {
+ 				this._swap(i, k)
+ 				i = k
+ 			}else{
+ 				break
+ 			}
+ 		}
+ 	}
+ 	findKthLargest(k) {
+ 		//找到第k大的数
+ 		this.buildHeap()
+ 		for(let i = this.arr.length-1; i>=this.arr.length-k+1; i--) {
+ 			this._swap(0, i)
+ 			this.adjustHeap(0, i)
+ 		}
+ 		return this.arr[0]
+ 	}
+ 	_swap(i, j) {
+ 		let temp = this.arr[i]
+ 		this.arr[i] = this.arr[j]
+ 		this.arr[j] = temp
+ 	}
+ }
+var findKthLargest2 = function(nums, k) {
+	//堆排序 时间复杂度O(nlogn)
+	let heapSort = new HeapSort(nums)
+	return heapSort.findKthLargest(k)
+};
+
+//---------------------------树相关--------------
+function TreeNode(val, left, right) {
+    this.val = (val===undefined ? 0 : val)
+    this.left = (left===undefined ? null : left)
+    this.right = (right===undefined ? null : right)
+}
+/**
+判断一棵二叉树，是否为二叉搜索树
+https://leetcode-cn.com/problems/validate-binary-search-tree/
+中序遍历是有序的，判断后一个元素大于前一个元素即可
+时间复杂度(O(n))
+空间O(1)
+**/
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
+ * }
+ */
+/**
+ * @param {TreeNode} root
+ * @return {boolean}
+ */
+var isValidBST = function(root) {
+	let isValid = true
+	let preValue = -Infinity
+	let backTrack = function(node){
+		if (!isValid) {
+			return
+		}
+		if(!node){
+			return
+		}
+		backTrack(node.left)
+		if(node.val<=preValue){
+			isValid = false
+			return
+		}
+		preValue = node.val
+		backTrack(node.right)
+	}
+	backTrack(root)
+	return isValid
+};
+
+/*
+从上到下打印二叉树
+https://leetcode-cn.com/problems/cong-shang-dao-xia-da-yin-er-cha-shu-lcof/
+用队列实现，先进先出
+时间O(n)
+空间O(1)
+*/
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val) {
+ *     this.val = val;
+ *     this.left = this.right = null;
+ * }
+ */
+/**
+ * @param {TreeNode} root
+ * @return {number[]}
+ */
+var levelOrder = function(root) {
+	if(!root){
+		return []
+	}
+	let queue = [root]
+	let res = []
+	while(queue.length>0){
+		let node = queue.shift()
+		res.push(node.val)
+		if(node.left){
+			queue.push(node.left)
+		}
+		if(node.right){
+			queue.push(node.right)
+		}
+	}
+	return res
+};
+/*
+每一层打印到一行
+https://leetcode-cn.com/problems/cong-shang-dao-xia-da-yin-er-cha-shu-ii-lcof/
+*/
+/*
+判断一棵二叉树，是否是一棵 完全二叉树
+https://leetcode-cn.com/problems/check-completeness-of-a-binary-tree/
+
+给定一个二叉树的 root ，确定它是否是一个 完全二叉树 。
+
+在一个 完全二叉树 中，除了最后一个关卡外，所有关卡都是完全被填满的，并且最后一个关卡中的所有节点都是尽可能靠左的。它可以包含 1 到 2的h 节点之间的最后一级 h 。
+
+思路：把所有节点放到数组中并重新赋值
+1
+2 3
+4 5 6 7
+父n 子2n 2n+1
+判断数组的最后一个元素的值和数组的元素个数相同
+时间O(n)
+空间O(n)
+*/
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
+ * }
+ */
+/**
+ * @param {TreeNode} root
+ * @return {boolean}
+ */
+var isCompleteTree = function(root) {
+	let arr = [root]
+	if (root) {root.val = 1}
+	let i = 0
+	while(i<arr.length){
+		let node = arr[i++]
+		if (node.left) {
+			node.left.val = 2*node.val
+			arr.push(node.left)
+		}
+		if (node.right) {
+			node.right.val = 2*node.val+1
+			arr.push(node.right)
+		}
+	}
+	return arr[arr.length-1].val == arr.length
+};
+
+/*
+查找二叉树中的节点
+https://leetcode.cn/problems/search-in-a-binary-search-tree/
+*/
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
+ * }
+ */
+/**
+ * @param {TreeNode} root
+ * @param {number} val
+ * @return {TreeNode}
+ */
+var searchBST = function(root, val) {
+	if (!root) {
+		return null
+	}
+	if(root.val == val){
+		return root
+	}
+	return val<root.val?searchBST(root.left, val):searchBST(root.right, val)
+};
+
+
+/*
+删除二叉搜索树中的节点后，保持二叉搜索树性质不变
+*/
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
+ * }
+ */
+/**
+ * @param {TreeNode} root
+ * @param {number} key
+ * @return {TreeNode}
+ */
+var deleteNode = function(root, key) {
+	if(!root){
+		return null
+	}
+	if(root.val>key){
+		//在左子树
+		root.left = deleteNode(root.left, key)
+	}else if(root.val<key){
+		//在右子树
+		root.right = deleteNode(root.right, key)
+	}else{
+		//需要删除的节点
+		if(!root.left){
+			return root.right
+		}
+		if(!root.right){
+			return root.left
+		}
+		//左右节点都存在 左节点挂到有节点的最小子树上，并返回右节点
+		let minRight = root.right
+		while(minRight.left){
+			minRight = minRight.left
+		}
+		minRight.left = root.left
+		return root.right
+	}
+	return root
+};
+/*
+给定一个二叉搜索树的根节点 root 和一个值 key，删除二叉搜索树中的 key 对应的节点，并保证二叉搜索树的性质不变。返回二叉搜索树（有可能被更新）的根节点的引用。
+
+一般来说，删除节点可分为两个步骤：
+
+首先找到需要删除的节点；
+如果找到了，删除它。
+
+根据二叉搜索树的性质
+
+如果目标节点大于当前节点值，则去右子树中删除；
+如果目标节点小于当前节点值，则去左子树中删除；
+如果目标节点就是当前节点，分为以下三种情况：
+	其无左子：其右子顶替其位置，删除了该节点；
+	其无右子：其左子顶替其位置，删除了该节点；
+	其左右子节点都有：其左子树转移到其右子树的最左节点的左子树上，然后右子树顶替其位置，由此删除了该节点。
+*/
+
+/*
+二叉搜索树插入一个值
+https://leetcode.cn/problems/insert-into-a-binary-search-tree/
+*/
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
+ * }
+ */
+/**
+ * @param {TreeNode} root
+ * @param {number} val
+ * @return {TreeNode}
+ */
+var insertIntoBST = function(root, val) {
+	if(!root){
+		return new TreeNode(val)
+	}
+	if(root.val<val){
+		root.right = insertIntoBST(root.right, val)
+	}else{
+		root.left = insertIntoBST(root.left, val)
+	}
+	return root
+};
+
+/*
+二叉搜索树最小距离
+
+https://leetcode.cn/problems/minimum-distance-between-bst-nodes/
+*/
+/*
+将有序数组转换为二叉搜索树
+
+https://leetcode.cn/problems/convert-sorted-array-to-binary-search-tree/
+
+中序遍历，总是选择中间位置左边的数字作为根节点
+*/
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
+ * }
+ */
+/**
+ * @param {number[]} nums
+ * @return {TreeNode}
+ */
+var sortedArrayToBST = function(nums) {
+	let backTrack = function(left, right){
+		if(left>right){return null}
+
+		let mid = Math.floor((left+right)/2)
+		let node = new TreeNode(nums[mid])
+		node.left = backTrack(left, mid-1)
+		node.right = backTrack(mid+1, right)
+		return node
+	}
+	return backTrack(0, nums.length-1)
+};
+
+/*
+226. 翻转二叉树
+https://leetcode.cn/problems/invert-binary-tree/
+
+*/
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
+ * }
+ */
+/**
+ * @param {TreeNode} root
+ * @return {TreeNode}
+ */
+var invertTree = function(root) {
+	if (!root) {return null}
+	let left = root.left
+	let right = root.right
+	root.left = invertTree(right)
+	root.right = invertTree(left)
+	return root
+};
+
+//继承的实现
+function Person(id){
+	this.id = id
+}
+function Student(id, age){
+	//借用构造，继承构造函数的
+	Person.call(this, id)
+	this.age = age
+}
+//继承原型链上的
+(function AA(){
+	function A(){
+	}
+	A.prototype = Person.prototype
+	Student.prototype = new A()
+})()
+
+
