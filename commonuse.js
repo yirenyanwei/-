@@ -2,7 +2,7 @@
 * @Author: haoyanwei
 * @Date:   2022-12-04 15:48:22
 * @Last Modified by:   haoyanwei
-* @Last Modified time: 2022-12-18 22:16:31
+* @Last Modified time: 2022-12-18 22:27:08
 * 常用的50道算法题
 */
 
@@ -1210,7 +1210,6 @@ var sortedArrayToBST = function(nums) {
 	}
 	return backTrack(0, nums.length-1)
 };
-
 /*
 226. 翻转二叉树
 https://leetcode.cn/problems/invert-binary-tree/
