@@ -2,7 +2,7 @@
 * @Author: haoyanwei
 * @Date:   2022-12-04 15:48:22
 * @Last Modified by:   haoyanwei
-* @Last Modified time: 2022-12-17 17:50:16
+* @Last Modified time: 2022-12-18 22:16:31
 * 常用的50道算法题
 */
 
@@ -154,7 +154,6 @@ function quickSort(nums){
 var nums = [3,1,1,4,2]
 quickSort(nums)
 console.log('quickSort', nums)
-
 
 //归并排序
 //时间O(nLgn) 空间O(n)
@@ -1056,7 +1055,6 @@ var isCompleteTree = function(root) {
 	}
 	return arr[arr.length-1].val == arr.length
 };
-
 /*
 查找二叉树中的节点
 https://leetcode.cn/problems/search-in-a-binary-search-tree/
