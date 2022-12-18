@@ -2,7 +2,7 @@
 * @Author: haoyanwei
 * @Date:   2022-12-04 15:48:22
 * @Last Modified by:   haoyanwei
-* @Last Modified time: 2022-12-17 09:48:22
+* @Last Modified time: 2022-12-17 17:50:16
 * 常用的50道算法题
 */
 
@@ -1257,3 +1257,238 @@ function Student(id, age){
 })()
 
 
+/*
+最长重复子串
+https://leetcode-cn.com/problems/longest-duplicate-substring/
+
+给你一个字符串 s ，考虑其所有 重复子串 ：即 s 的（连续）子串，在 s 中出现 2 次或更多次。这些出现之间可能存在重叠。
+返回 任意一个 可能具有最长长度的重复子串。如果 s 不含重复子串，那么答案为 "" 。
+*/
+/**
+ * @param {string} s
+ * @return {string}
+ */
+var longestDupSubstring = function(s) {
+	let maxSub = ''
+	let map = {}
+	let len = s.length
+	let getAllSub = function(start){
+		//获取以start开头的子串
+		for(let i = len-1; i>=start; i--){
+			if(maxSub.length>=i-start+1){
+				break
+			}
+			let sub = s.slice(start, i+1)
+			if(map[sub]){
+				if (sub.length>maxSub.length) {
+					maxSub = sub
+					break
+				}
+			}else {
+				map[sub] = true
+			}
+		}
+	}
+	for(let i = 0; i<s.length; i++){
+		getAllSub(i)
+	}
+	return maxSub
+};
+var s = 'ddabcabc'
+console.log('longestDupSubstring:', longestDupSubstring(s))
+/*
+3. 无重复字符的最长子串
+给定一个字符串 s ，请你找出其中不含有重复字符的 最长子串 的长度。
+https://leetcode.cn/problems/longest-substring-without-repeating-characters/
+
+滑动窗口法
+时间O(n)
+空间O(n)
+*/
+/**
+ * @param {string} s
+ * @return {number}
+ */
+var lengthOfLongestSubstring = function(s) {
+	let maxLen = 0
+	let map = {}
+	let st = 0, ed = 0
+	for(let i = 0; i<s.length; i++){
+		let c = s[i]
+		if(!map[c]){
+			map[c] = 1
+			ed=i
+			maxLen = Math.max(maxLen, ed-st+1)
+		}else{
+			ed = i
+			while(s[st]!=c){
+				map[s[st]]--
+				st++
+			}
+			//s[st]==c
+			st++
+		}
+	} 
+	return maxLen
+};
+s = "abcabcbb"
+console.log('lengthOfLongestSubstring', lengthOfLongestSubstring(s))
+
+/*
+28. 找出字符串中第一个匹配项的下标
+https://leetcode.cn/problems/find-the-index-of-the-first-occurrence-in-a-string/
+给你两个字符串 haystack 和 needle ，请你在 haystack 字符串中找出 needle 字符串的第一个匹配项的下标（下标从 0 开始）。如果 needle 不是 haystack 的一部分，则返回  -1 。
+穷举法
+时间O((n-m)*m)
+空间O(1)
+*/
+/**
+ * @param {string} haystack
+ * @param {string} needle
+ * @return {number}
+ */
+var strStr = function(haystack, needle) {
+	let n = haystack.length
+	let m = needle.length
+	for(let i = 0; i<=n-m; i++){
+		let a = i, b = 0
+		while(b<m && haystack[a]==needle[b]){
+			a++
+			b++
+		}
+		if (b==m) {return i}
+	}
+	return -1
+};
+haystack = "sadbutsad", needle = "sad"
+haystack = "a", needle = "a"
+console.log('strStr:', strStr(haystack, needle))
+
+/*
+242. 有效的字母异位词
+给定两个字符串 s 和 t ，编写一个函数来判断 t 是否是 s 的字母异位词。
+
+注意：若 s 和 t 中每个字符出现的次数都相同，则称 s 和 t 互为字母异位词。
+
+https://leetcode.cn/problems/valid-anagram/
+哈希表
+时间复杂度O(n)
+空间O(n)
+*/
+/**
+ * @param {string} s
+ * @param {string} t
+ * @return {boolean}
+ */
+var isAnagram = function(s, t) {
+	if (s.length!=t.length) {
+		return false
+	}
+	let map = {}
+	for(let i = 0; i<s.length; i++){
+		map[s[i]] = map[s[i]] || 0
+		map[s[i]]++
+	}
+	for(let i = 0; i<t.length; i++){
+		map[t[i]] = map[t[i]] || 0
+		map[t[i]]--
+		if(map[t[i]]<0){
+			return false
+		}
+	}
+	return true
+};
+s = "anagram", t = "nagaram"
+console.log('isAnagram:', isAnagram(s,t))
+/*
+53. 最大子数组和
+https://leetcode.cn/problems/maximum-subarray/
+
+f(i) = max(f(i-1)+nums[i], nums[i])
+*/
+/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+var maxSubArray = function(nums) {
+	let pre = 0, maxNum = nums[0]
+	for(let i = 0; i<nums.length; i++) {
+		pre = Math.max(pre+nums[i], nums[i])
+		maxNum = Math.max(maxNum, pre)
+	}
+	return maxNum
+};
+nums = [-2,1,-3,4,-1,2,1,-5,4]
+console.log('maxSubArray:', maxSubArray(nums))
+
+/*
+300. 最长递增子序列
+https://leetcode.cn/problems/longest-increasing-subsequence/
+给你一个整数数组 nums ，找到其中最长严格递增子序列的长度。
+子序列 是由数组派生而来的序列，删除（或不删除）数组中的元素而不改变其余元素的顺序。例如，[3,6,2,7] 是数组 [0,3,1,6,2,2,7] 的子序列。
+
+动态规划
+时间O(n*n)
+空间O(n)
+*/
+/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+var lengthOfLIS = function(nums) {
+	if(nums.length<=0){
+		return 0
+	}
+	let dp = new Array(nums.length)
+	dp[0] = 1
+	let maxNum = 1
+	for(let i = 1; i<nums.length; i++)
+	{
+		dp[i] = 1
+		for(let j = 0; j<i; j++){
+			if(nums[j]<nums[i]){
+				dp[i] = Math.max(dp[i], dp[j]+1)
+			}
+		}
+		maxNum = Math.max(maxNum, dp[i])
+	}
+	return 
+};
+nums = [10,9,2,5,3,7,101,18]
+nums = [0]
+console.log('lengthOfLIS:', lengthOfLIS(nums))
+
+/*
+1143. 最长公共子序列
+https://leetcode.cn/problems/longest-common-subsequence/
+1143. 最长公共子序列
+给定两个字符串 text1 和 text2，返回这两个字符串的最长 公共子序列 的长度。如果不存在 公共子序列 ，返回 0 。
+一个字符串的 子序列 是指这样一个新的字符串：它是由原字符串在不改变字符的相对顺序的情况下删除某些字符（也可以不删除任何字符）后组成的新字符串。
+
+例如，"ace" 是 "abcde" 的子序列，但 "aec" 不是 "abcde" 的子序列。
+两个字符串的 公共子序列 是这两个字符串所共同拥有的子序列
+
+*/
+/**
+ * @param {string} text1
+ * @param {string} text2
+ * @return {number}
+ */
+var longestCommonSubsequence = function(text1, text2) {
+	const m = text1.length, n = text2.length;
+    const dp = new Array(m + 1).fill(0).map(() => new Array(n + 1).fill(0));
+    for (let i = 1; i <= m; i++) {
+        const c1 = text1[i - 1];
+        for (let j = 1; j <= n; j++) {
+            const c2 = text2[j - 1];
+            //当两个字符相同时
+            if (c1 === c2) {
+                dp[i][j] = dp[i - 1][j - 1] + 1;
+            } else {
+            	//当前判断的两个字符不同时
+                dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+            }
+        }
+    }
+    return dp[m][n];
+};
