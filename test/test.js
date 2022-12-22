@@ -2,7 +2,7 @@
 * @Author: haoyanwei
 * @Date:   2022-12-14 18:45:51
 * @Last Modified by:   haoyanwei
-* @Last Modified time: 2022-12-14 19:11:51
+* @Last Modified time: 2022-12-21 20:13:25
 */
 
 /**
@@ -72,3 +72,83 @@ var arrs = [
   {id: 5, name: '部门5', pid: 4},
 ]
 console.log(toTree(arrs))
+
+/*
+时间复杂度 O(n)
+空间O(1)
+*/
+//堆排序
+class HeapSort{
+  //大顶堆
+  constructor(array){
+    this.array = array
+  }
+  buildHeap(){
+    //构建堆
+    for(let i=parseInt((this.array.length)/2)-1; i>=0; i--){
+      //从右向左，从下向上构建
+      this.adjustHeap(i, this.array.length)
+    }
+  }
+  adjustHeap(i, len){
+    //调整堆
+    for(let k=2*i+1; k<len; k=2*k+1){
+      //父 i  子 k/k+1
+      if(k+1<len&&this.array[k+1]>this.array[k]){
+        k = k+1
+      }
+      if(this.array[k]>this.array[i]){
+        this._swap(i, k)
+        i = k
+      }else {
+        //不用调整
+        break
+      }
+    }
+  }
+  sort(){
+    //堆排序
+    this.buildHeap()
+    for(let i = this.array.length-1; i>=0; i--){
+      this._swap(i, 0)
+      this.adjustHeap(0, i)
+    }
+  }
+  _swap(a,b){
+    let temp = this.array[a]
+    this.array[a] = this.array[b]
+    this.array[b] = temp
+  }
+}
+var array = [3,5,1,4,2]
+var heapSort = new HeapSort(array)
+heapSort.sort()
+console.log('HeapSort:', array)
+
+//继承
+function Person(id){
+  this.id = id
+}
+function Student(name, id){
+  //继承构造函数上的
+  Person.call(this, id)
+  this.name = name
+}
+(function (){
+  function A(){}
+  //继承原型链上的
+  A.prototype = Person.prototype
+  Student.prototype = new A()
+})()
+Student.prototype.getName = function(){
+  return this.name
+}
+var student = new Student('haha', 123)
+console.log('Student:', student.getName())
+
+var haha
+
+(function (){
+  var haha = '100'
+})()
+console.log(haha)
